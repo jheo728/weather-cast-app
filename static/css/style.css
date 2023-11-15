@@ -1,0 +1,64 @@
+#map {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Define styles for the popup */
+.ol-popup {
+  position: absolute;
+  max-height: 250px;
+  overflow-y: auto;
+  background-color: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: none;
+  width: auto; /* Set the popup width to adjust to content */
+}
+
+/* Style for the "No data available" popup */
+.no-data-content {
+  background-color: #ffffff; /* Example: change the background color to red */
+  color: rgb(0, 0, 0); /* Example: change the text color to white */
+  text-align: left; /* Example: center-align the text */
+  font-weight: bold; /* Example: make the text bold */
+  width: 350px;
+  display: flex;
+  flex-direction: row;
+}
+
+/* Customize the popup box itself */
+.popup-content {
+  max-height: auto;
+  width: 750px;
+  white-space: nowrap;
+}
+
+/* Style for each forecast period */
+.forecast-period {
+  padding: 8px; /* Add padding for better readability */
+  border-right: 1px solid #ccc;
+  border-radius: 4px;
+  white-space: normal;
+  width: 250px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* Style for the forecast period image */
+.forecast-period-image {
+  max-height: 100px; /* Set the maximum height for the image */
+  flex: none; /* Prevent image from flexing */
+  display: block;
+  margin: 0 auto;
+  align-self: flex-start;
+}
+
+/* Style for the centered text */
+.centered-text {
+  text-align: center;
+}
+
+/* Style for the rest of the text (left-aligned) */
+.forecast-text {
+  text-align: left;
+}

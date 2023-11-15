@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Flask App</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/openlayers@latest/dist/ol.css"
+      type="text/css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/openlayers@latest/dist/ol.js"></script>
+
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <!-- Create a div to hold the map -->
+    <div id="map"></div>
+
+    <!-- Create a div for the popup -->
+    <div id="forecast-popup" class="ol-popup">
+      <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+      <div id="popup-content" class="popup-content"></div>
+    </div>
+
+    <!-- Create a div for the "No data available" popup -->
+    <div id="no-data-popup" class="ol-popup">
+      <div id="no-data-content" class="no-data-content"></div>
+    </div>
+
+    <!-- Link your JavaScript file -->
+    <script src="/static/js/main.js"></script>
+  </body>
+</html>
