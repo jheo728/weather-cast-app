@@ -1,3 +1,21 @@
+// Create a function to clear the popup's content
+function clearPopupContent() {
+  const popupContent = document.getElementById("popup-content");
+  popupContent.innerHTML = "";
+
+  const noDataContent = document.getElementById("no-data-content");
+  noDataContent.innerHTML = "";
+}
+
+function closePopup(popup) {
+  const closer = document.getElementById("popup-closer");
+  closer.addEventListener("click", function () {
+    popup.setPosition(undefined);
+    closer.blur();
+    return false;
+  });
+}
+
 // Define the extent for the continental United States
 const continentalUSExtent = [-126, 22, -40, 50];
 
@@ -31,6 +49,7 @@ const forecastPopup = new ol.Overlay({
   },
 });
 map.addOverlay(forecastPopup);
+closePopup(forecastPopup);
 
 // Create a popup overlay for "no-data-content"
 const noDataPopup = new ol.Overlay({
@@ -41,18 +60,10 @@ const noDataPopup = new ol.Overlay({
   },
 });
 map.addOverlay(noDataPopup);
-
-// Create a function to clear the popup's content
-function clearPopupContent() {
-  const popupContent = document.getElementById("popup-content");
-  popupContent.innerHTML = "";
-
-  const noDataContent = document.getElementById("no-data-content");
-  noDataContent.innerHTML = "";
-}
+closePopup(noDataPopup);
 
 // Add a click event handler to capture coordinates and send them to the server
-map.on("click", function (event) {
+map.on("singleclick", function (event) {
   clearPopupContent(); // Clear the previous content
   const clickedCoordinate = ol.proj.toLonLat(event.coordinate);
   // Check if the clicked coordinate is within the continental U.S. extent
@@ -68,6 +79,7 @@ map.on("click", function (event) {
       latitude: clickedCoordinate[1],
       longitude: clickedCoordinate[0],
     };
+    console.log("Fetching data from weather API...");
     fetch(url, {
       method: "POST",
       headers: {
@@ -108,7 +120,11 @@ map.on("click", function (event) {
 
           // Set the position of the popup and display it
           forecastPopup.setPosition(event.coordinate);
+          console.log(
+            "Successfully pulled data with contents in popup window."
+          );
         } else {
+          console.log("No data available or API could not retrieve data.");
           // Display a unique popup to show no data
           const noDataContent = document.getElementById("no-data-content");
           noDataContent.innerHTML =

@@ -1,18 +1,70 @@
-#map {
+.map {
   width: 100vw;
   height: 100vh;
+}
+
+.popup-title {
+  font-weight: bold;
+}
+
+.ol-popup-outer {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  /*width: auto; /* Set the popup width to adjust to content */
 }
 
 /* Define styles for the popup */
 .ol-popup {
   position: absolute;
   max-height: 250px;
-  overflow-y: auto;
+  overflow-y: scroll;
   background-color: white;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  border: none;
+  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); */
+  /* border-radius: 10px; */
+  /* padding-top: 25px; */
   width: auto; /* Set the popup width to adjust to content */
+}
+
+/* Add styles for the top bar */
+.ol-popup-top-bar {
+  min-height: 30px; /* Set a minimum height for the title bar */
+  background-color: #f8f8f8; /* Add background color for better visibility */
+  border-bottom: 1px solid white; /* Add a border to separate title and content */
+  width: 750px;
+  padding-left: 17.5px;
+}
+
+.ol-popup:after,
+.ol-popup:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.ol-popup:after {
+  border-top-color: white;
+  border-width: 10px;
+  left: 48px;
+  margin-left: -10px;
+}
+.ol-popup:before {
+  border-top-color: #cccccc;
+  border-width: 11px;
+  left: 48px;
+  margin-left: -11px;
+}
+.ol-popup-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 2px;
+  right: 8px;
+}
+.ol-popup-closer:after {
+  content: "✖";
 }
 
 /* Style for the "No data available" popup */
@@ -37,7 +89,6 @@
 .forecast-period {
   padding: 8px; /* Add padding for better readability */
   border-right: 1px solid #ccc;
-  border-radius: 4px;
   white-space: normal;
   width: 250px;
   display: inline-block;
