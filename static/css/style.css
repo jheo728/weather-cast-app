@@ -5,58 +5,42 @@
 
 .popup-title {
   font-weight: bold;
+  overflow: hidden; /* Hide any overflowing content */
+  white-space: nowrap; /* Prevent text from wrapping */
+  text-overflow: ellipsis; /* Display an ellipsis (...) to represent overflow */
+}
+
+.forecast-title-popup-container {
+  width: 750px;
+}
+
+.no-data-title-popup-container {
+  width: 395px;
 }
 
 .ol-popup-outer {
   position: absolute;
   background-color: white;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-  /*width: auto; /* Set the popup width to adjust to content */
+  /* border-bottom: 1px solid rgb(0, 0, 0); */
 }
 
 /* Define styles for the popup */
 .ol-popup {
   position: absolute;
-  max-height: 250px;
+  max-height: 500px;
   overflow-y: scroll;
   background-color: white;
-  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); */
-  /* border-radius: 10px; */
-  /* padding-top: 25px; */
-  width: auto; /* Set the popup width to adjust to content */
 }
 
 /* Add styles for the top bar */
 .ol-popup-top-bar {
   min-height: 30px; /* Set a minimum height for the title bar */
-  background-color: #f8f8f8; /* Add background color for better visibility */
-  border-bottom: 1px solid white; /* Add a border to separate title and content */
-  width: 750px;
-  padding-left: 17.5px;
+  background-color: white; /* Add background color for better visibility */
+  padding-left: 5%;
+  padding-top: 4px;
 }
 
-.ol-popup:after,
-.ol-popup:before {
-  top: 100%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
-}
-.ol-popup:after {
-  border-top-color: white;
-  border-width: 10px;
-  left: 48px;
-  margin-left: -10px;
-}
-.ol-popup:before {
-  border-top-color: #cccccc;
-  border-width: 11px;
-  left: 48px;
-  margin-left: -11px;
-}
+/* Styles for popup closer */
 .ol-popup-closer {
   text-decoration: none;
   position: absolute;
@@ -69,18 +53,18 @@
 
 /* Style for the "No data available" popup */
 .no-data-content {
-  background-color: #ffffff; /* Example: change the background color to red */
-  color: rgb(0, 0, 0); /* Example: change the text color to white */
-  text-align: left; /* Example: center-align the text */
-  font-weight: bold; /* Example: make the text bold */
-  width: 350px;
-  display: flex;
-  flex-direction: row;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  text-align: left;
+  font-weight: bold;
+  width: 375px;
+  height: 25px;
+  padding-left: 5%;
 }
 
 /* Customize the popup box itself */
 .popup-content {
-  max-height: auto;
+  height: 300px;
   width: 750px;
   white-space: nowrap;
 }

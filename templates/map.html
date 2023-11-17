@@ -14,27 +14,33 @@
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
-    <!-- Create a div to hold the map -->
+    <!-- Basemap -->
     <div id="map" class="map"></div>
 
-    <!-- Create a div for the popup -->
-    <div id="forecast-popup" class="ol-popup-outer">
+    <!-- Forecast data popup -->
+    <div
+      id="forecast-popup"
+      class="ol-popup-outer forecast-title-popup-container"
+    >
       <div class="ol-popup-top-bar">
-        <span id="popup-title" class="popup-title">Popup Title</span>
+        <span class="popup-title">Forecast popup</span>
         <a href="#" id="popup-closer" class="ol-popup-closer"></a>
       </div>
-      <div class="ol-popup">
-        <div id="popup-content" class="popup-content"></div>
+      <div id="popup-content" class="ol-popup popup-content"></div>
+    </div>
+
+    <!-- "No data available" popup -->
+    <div
+      id="no-data-popup"
+      class="ol-popup-outer no-data-title-popup-container"
+    >
+      <div class="ol-popup-top-bar">
+        <span class="popup-title">No data popup</span>
+        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
       </div>
+      <div id="no-data-content" class="ol-popup no-data-content"></div>
     </div>
 
-    <!-- Create a div for the "No data available" popup -->
-    <div id="no-data-popup" class="ol-popup">
-      <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-      <div id="no-data-content" class="no-data-content"></div>
-    </div>
-
-    <!-- Link your JavaScript file -->
     <script src="/static/js/main.js"></script>
   </body>
 </html>

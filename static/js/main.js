@@ -1,10 +1,18 @@
 // Create a function to clear the popup's content
-function clearPopupContent() {
-  const popupContent = document.getElementById("popup-content");
-  popupContent.innerHTML = "";
+function clearPopupContent(popups) {
+  popups.forEach((popup) => {
+    const clearPopup = document.getElementById("popup-closer");
 
-  const noDataContent = document.getElementById("no-data-content");
-  noDataContent.innerHTML = "";
+    if (popup.getPosition() === undefined) {
+      return false;
+    }
+
+    // Skip the process, as the popup position is not undefined
+    popup.setPosition(undefined);
+    clearPopup.blur();
+  });
+
+  return false;
 }
 
 function closePopup(popup) {
@@ -64,7 +72,7 @@ closePopup(noDataPopup);
 
 // Add a click event handler to capture coordinates and send them to the server
 map.on("singleclick", function (event) {
-  clearPopupContent(); // Clear the previous content
+  clearPopupContent([forecastPopup, noDataPopup]); // Clear the previous content
   const clickedCoordinate = ol.proj.toLonLat(event.coordinate);
   // Check if the clicked coordinate is within the continental U.S. extent
   if (
@@ -112,7 +120,7 @@ map.on("singleclick", function (event) {
             textDiv.className = "forecast-text"; // Add this class
 
             // Center align the first line of text
-            textDiv.innerHTML += `<div class="centered-text"><b>${period.name}</b></div><br>Temperature: ${period.temp}<br>Forecast: ${period.details}`;
+            textDiv.innerHTML += `<div class="centered-text"><b>${period.name}</b></div><br>Temperature: ${period.temp}<br><br>Forecast: ${period.details}`;
 
             periodDiv.appendChild(textDiv);
             popupContent.appendChild(periodDiv);
@@ -136,5 +144,7 @@ map.on("singleclick", function (event) {
       .catch(function (error) {
         console.error("An error occurred:", error);
       });
+  } else {
+    console.log("Invalid area, select another area for weather data forecast.");
   }
 });
