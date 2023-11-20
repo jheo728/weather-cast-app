@@ -21,7 +21,6 @@ def fetch_analyze_forecast():
         
         # Use the received latitude and longitude in your forecast_query function
         forecast_data = forecast_query(endpoint='points', lat=latitude, lon=longitude)
-        print(forecast_data)
         
         # Ensure that data was fetched from the API endpoint and stored in variable
         if forecast_data:
