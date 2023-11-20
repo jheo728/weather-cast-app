@@ -3,97 +3,51 @@
   height: 100vh;
 }
 
-.popup-title {
-  font-weight: bold;
-  overflow: hidden; /* Hide any overflowing content */
-  white-space: nowrap; /* Prevent text from wrapping */
-  text-overflow: ellipsis; /* Display an ellipsis (...) to represent overflow */
+/* Style for the modal content */
+.modal-content {
+  width: 100%;
+  max-width: none; /* Remove the maximum width limit */
 }
 
-.forecast-title-popup-container {
-  width: 750px;
+/* Style for the modal body */
+.modal-body {
+  display: flex; /* Use flexbox for the modal body */
+  flex-wrap: nowrap; /* Ensure no wrapping of columns */
+  overflow-y: auto;
 }
 
-.no-data-title-popup-container {
-  width: 395px;
+/* Style for the forecastModal content to enable scrolling and add vertical line */
+#popup-content {
+  max-height: 100%; /* Set the maximum height of the popup content */
+  overflow-y: auto; /* Enable vertical scrolling */
+  display: flex; /* Use flexbox for the popup content */
 }
 
-.ol-popup-outer {
-  position: absolute;
-  background-color: white;
-  /* border-bottom: 1px solid rgb(0, 0, 0); */
+/* Style for the single row in the modal body */
+.row {
+  display: flex; /* Use flexbox for the row */
+  flex-wrap: nowrap; /* Ensure no wrapping of columns */
 }
 
-/* Define styles for the popup */
-.ol-popup {
-  position: absolute;
-  max-height: 500px;
-  overflow-y: scroll;
-  background-color: white;
+/* Style for each forecast period column */
+.col-3 {
+  flex: 0 0 auto; /* Disable flex grow and shrink, fixed width */
+  border-right: 1px solid #ddd;
 }
 
-/* Add styles for the top bar */
-.ol-popup-top-bar {
-  min-height: 30px; /* Set a minimum height for the title bar */
-  background-color: white; /* Add background color for better visibility */
-  padding-left: 5%;
-  padding-top: 4px;
+/* Remove vertical line from the last column in each row */
+.col-3:last-child {
+  border-right: none;
 }
 
-/* Styles for popup closer */
-.ol-popup-closer {
-  text-decoration: none;
-  position: absolute;
-  top: 2px;
-  right: 8px;
-}
-.ol-popup-closer:after {
-  content: "✖";
-}
-
-/* Style for the "No data available" popup */
-.no-data-content {
-  background-color: #ffffff;
-  color: rgb(0, 0, 0);
-  text-align: left;
-  font-weight: bold;
-  width: 375px;
-  height: 25px;
-  padding-left: 5%;
-}
-
-/* Customize the popup box itself */
-.popup-content {
-  height: 300px;
-  width: 750px;
-  white-space: nowrap;
-}
-
-/* Style for each forecast period */
-.forecast-period {
-  padding: 8px; /* Add padding for better readability */
-  border-right: 1px solid #ccc;
-  white-space: normal;
-  width: 250px;
-  display: inline-block;
-  vertical-align: top;
-}
-
-/* Style for the forecast period image */
+/* Adjust the style for the forecast period image */
 .forecast-period-image {
-  max-height: 100px; /* Set the maximum height for the image */
-  flex: none; /* Prevent image from flexing */
+  max-width: 100%; /* Set the maximum width for the image */
+  height: auto; /* Maintain aspect ratio */
   display: block;
   margin: 0 auto;
-  align-self: flex-start;
 }
 
-/* Style for the centered text */
 .centered-text {
   text-align: center;
-}
-
-/* Style for the rest of the text (left-aligned) */
-.forecast-text {
-  text-align: left;
 }

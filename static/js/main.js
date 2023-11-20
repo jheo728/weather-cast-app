@@ -1,29 +1,3 @@
-// Create a function to clear the popup's content
-function clearPopupContent(popups) {
-  popups.forEach((popup) => {
-    const clearPopup = document.getElementById("popup-closer");
-
-    if (popup.getPosition() === undefined) {
-      return false;
-    }
-
-    // Skip the process, as the popup position is not undefined
-    popup.setPosition(undefined);
-    clearPopup.blur();
-  });
-
-  return false;
-}
-
-function closePopup(popup) {
-  const closer = document.getElementById("popup-closer");
-  closer.addEventListener("click", function () {
-    popup.setPosition(undefined);
-    closer.blur();
-    return false;
-  });
-}
-
 // Define the extent for the continental United States
 const continentalUSExtent = [-126, 22, -40, 50];
 
@@ -48,31 +22,8 @@ const map = new ol.Map({
   }),
 });
 
-// Create a popup overlay for the forecast data
-const forecastPopup = new ol.Overlay({
-  element: document.getElementById("forecast-popup"),
-  autoPan: true,
-  autoPanAnimation: {
-    duration: 250,
-  },
-});
-map.addOverlay(forecastPopup);
-closePopup(forecastPopup);
-
-// Create a popup overlay for "no-data-content"
-const noDataPopup = new ol.Overlay({
-  element: document.getElementById("no-data-popup"),
-  autoPan: true,
-  autoPanAnimation: {
-    duration: 250,
-  },
-});
-map.addOverlay(noDataPopup);
-closePopup(noDataPopup);
-
 // Add a click event handler to capture coordinates and send them to the server
 map.on("singleclick", function (event) {
-  clearPopupContent([forecastPopup, noDataPopup]); // Clear the previous content
   const clickedCoordinate = ol.proj.toLonLat(event.coordinate);
   // Check if the clicked coordinate is within the continental U.S. extent
   if (
@@ -104,15 +55,19 @@ map.on("singleclick", function (event) {
           const popupContent = document.getElementById("popup-content");
           popupContent.innerHTML = "";
 
+          // Create a single row for forecast periods
+          const row = document.createElement("div");
+          row.className = "row";
+
           forecastData.forEach(function (period) {
             const periodDiv = document.createElement("div");
-            periodDiv.className = "forecast-period";
+            // Add Bootstrap column classes as needed
+            periodDiv.className = "col-3"; // Adjust the column size as needed
 
             // Add the image
             const img = document.createElement("img");
             img.className = "forecast-period-image";
             img.src = period.img_icon;
-
             periodDiv.appendChild(img);
 
             // Create a div for the text content
@@ -123,11 +78,21 @@ map.on("singleclick", function (event) {
             textDiv.innerHTML += `<div class="centered-text"><b>${period.name}</b></div><br>Temperature: ${period.temp}<br><br>Forecast: ${period.details}`;
 
             periodDiv.appendChild(textDiv);
-            popupContent.appendChild(periodDiv);
+            row.appendChild(periodDiv);
           });
 
+          // Append the row to the popup content
+          popupContent.appendChild(row);
+
+          // Display the modal with updated title
+          $("#forecastModalLabel").text(
+            `Forecast Details: 
+            ${clickedCoordinate[1].toFixed(6)}, 
+            ${clickedCoordinate[0].toFixed(6)}`
+          );
+
           // Set the position of the popup and display it
-          forecastPopup.setPosition(event.coordinate);
+          $("#forecastModal").modal("show");
           console.log(
             "Successfully pulled data with contents in popup window."
           );
@@ -138,7 +103,15 @@ map.on("singleclick", function (event) {
           noDataContent.innerHTML =
             "No data available. Try again or select another area.";
           noDataContent.className = "no-data-content";
-          noDataPopup.setPosition(event.coordinate);
+
+          $("#noDataModalLabel").text(
+            `No Data Available: 
+            ${clickedCoordinate[1].toFixed(6)}, 
+            ${clickedCoordinate[0].toFixed(6)}`
+          );
+
+          // Display the Bootstrap no-data modal
+          $("#noDataModal").modal("show");
         }
       })
       .catch(function (error) {

@@ -26,7 +26,6 @@ def fetch_analyze_forecast():
         if forecast_data:
             # Limit to 5 forecast days (day/evening forecast periods)
             forecast_periods = forecast_data['properties']['periods'][:10]
-
             forecast_simplified = [{'number': x['number'], 'name': x['name'], 'temp': str(x['temperature'])+'F', 'details': x['detailedForecast'], 'img_icon': x['icon']} for x in forecast_periods]
 
             return jsonify(forecast_simplified)
@@ -36,4 +35,4 @@ def fetch_analyze_forecast():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=8080, debug=True)
