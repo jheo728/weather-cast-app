@@ -5,16 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Flask App</title>
 
-    <!-- Bootstrap CSS -->
+    <!-- Include Tailwind CSS -->
     <link
       rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css"
     />
-
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <link
       rel="stylesheet"
@@ -31,25 +26,25 @@
 
     <!-- Forecast Modal -->
     <div
-      class="modal fade"
+      class="modal hidden fixed inset-0 overflow-y-auto backdrop-filter backdrop-blur"
       id="forecastModal"
-      tabindex="-1"
-      role="dialog"
+      aria-modal="true"
       aria-labelledby="forecastModalLabel"
-      aria-hidden="true"
     >
-      <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-        <div class="modal-content">
+      <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white mx-auto w-4/5 p-4 rounded-lg relative">
+          <!-- Close button -->
+          <button
+            type="button"
+            class="absolute top-0 right-0 mt-2 mr-4 p-2 text-xl md:text-2xl lg:text-3xl xl:text-4xl"
+            aria-label="Close"
+            id="closeForecastModalBtn"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <!-- Modal content -->
           <div class="modal-header">
             <h5 class="modal-title" id="forecastModalLabel"></h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
           </div>
           <div class="modal-body">
             <div id="popup-content" class="column"></div>
@@ -60,28 +55,26 @@
 
     <!-- No Data Modal -->
     <div
-      class="modal fade"
+      class="modal hidden fixed inset-0 overflow-y-auto backdrop-filter backdrop-blur-sm"
       id="noDataModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="noDataModalLabel"
-      aria-hidden="true"
     >
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
+      <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white mx-auto w-4/5 p-4 rounded-lg relative">
+          <!-- Close button -->
+          <button
+            type="button"
+            class="absolute top-0 right-0 mt-2 mr-4 p-2 text-4xl"
+            aria-label="Close"
+            id="closeNoDataModalBtn"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <!-- Modal content -->
           <div class="modal-header">
             <h5 class="modal-title" id="noDataModalLabel"></h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
           </div>
           <div class="modal-body">
-            <div id="no-data-content"></div>
+            <div id="no-data-content" class="column"></div>
           </div>
         </div>
       </div>

@@ -3,47 +3,23 @@
   height: 100vh;
 }
 
-/* Style for the modal content */
-.modal-content {
-  width: 100%;
-  max-width: none; /* Remove the maximum width limit */
-}
-
 /* Style for the modal body */
 .modal-body {
-  display: flex; /* Use flexbox for the modal body */
-  flex-wrap: nowrap; /* Ensure no wrapping of columns */
+  flex: 1; /* Use flex for the modal body */
   overflow-y: auto;
 }
 
 /* Style for the forecastModal content to enable scrolling and add vertical line */
 #popup-content {
-  max-height: 100%; /* Set the maximum height of the popup content */
-  overflow-y: auto; /* Enable vertical scrolling */
-  display: flex; /* Use flexbox for the popup content */
-}
-
-/* Style for the single row in the modal body */
-.row {
-  display: flex; /* Use flexbox for the row */
-  flex-wrap: nowrap; /* Ensure no wrapping of columns */
-}
-
-/* Style for each forecast period column */
-.col-3 {
-  flex: 0 0 auto; /* Disable flex grow and shrink, fixed width */
-  border-right: 1px solid #ddd;
-}
-
-/* Remove vertical line from the last column in each row */
-.col-3:last-child {
-  border-right: none;
+  max-height: 100%;
+  overflow-y: auto;
+  flex: 1;
 }
 
 /* Adjust the style for the forecast period image */
 .forecast-period-image {
-  max-width: 100%; /* Set the maximum width for the image */
-  height: auto; /* Maintain aspect ratio */
+  max-width: 100%;
+  height: auto;
   display: block;
   margin: 0 auto;
 }
