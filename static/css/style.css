@@ -9,6 +9,10 @@
   overflow-y: auto;
 }
 
+.modal-title {
+  font-weight: bold;
+}
+
 /* Style for the forecastModal content to enable scrolling and add vertical line */
 #popup-content {
   max-height: 100%;

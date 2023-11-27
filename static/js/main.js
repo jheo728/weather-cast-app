@@ -22,134 +22,160 @@ const map = new ol.Map({
   }),
 });
 
-// Add a click event handler to capture coordinates and send them to the server
+// Function to check if the clicked coordinate is within the continental U.S. extent
+function isWithinUSExtent(coordinate) {
+  return (
+    coordinate[0] >= continentalUSExtent[0] &&
+    coordinate[0] <= continentalUSExtent[2] &&
+    coordinate[1] >= continentalUSExtent[1] &&
+    coordinate[1] <= continentalUSExtent[3]
+  );
+}
+
+// Function to send coordinates to the server and handle the response
+function fetchDataFromServer(latitude, longitude) {
+  const url = "/fetch-analyze-forecast";
+  const data = { latitude, longitude };
+
+  console.log("Fetching data from weather API...");
+
+  return fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => response.json())
+    .catch((error) => {
+      console.error("An error occurred:", error);
+      throw error; // Propagate the error to the next catch block
+    });
+}
+
+// Function to create a forecast period element from the template
+function createForecastPeriodElement(period) {
+  const forecastPeriodTemplate = document.getElementById(
+    "forecastPeriodTemplate"
+  );
+
+  // Activate the template and get a reference to the content
+  const templateContent = forecastPeriodTemplate.content.cloneNode(true);
+
+  // Customize the cloned template with period data
+  templateContent.querySelector("[data-id='periodName']").textContent =
+    period.name;
+  templateContent.querySelector("[data-id='imgIcon']").src = period.img_icon;
+  templateContent.querySelector("[data-id='tempPrecip']").innerHTML = `${
+    period.temp
+  } ${period.precip_chance ?? 0}`;
+  templateContent.querySelector("[data-id='shortForecast']").textContent =
+    period.short_forecast;
+  templateContent.querySelector("[data-id='details']").textContent =
+    period.details;
+
+  const seeDetailsBtn = templateContent.querySelector(
+    "[data-id='seeDetailsBtn']"
+  );
+  const detailsDiv = templateContent.querySelector("[data-id='details']");
+
+  seeDetailsBtn.addEventListener("click", function () {
+    // Toggle the visibility of the details
+    detailsDiv.style.display =
+      detailsDiv.style.display === "none" ? "block" : "none";
+    // Update button text based on current text
+    this.textContent =
+      this.textContent.trim() === "See Details" ? "Collapse" : "See Details";
+  });
+
+  return templateContent;
+}
+
+// Function to handle the forecast data and update the UI
+function handleForecastData(clickedCoordinate, forecastData) {
+  const popupContent = document.getElementById("popup-content");
+  popupContent.innerHTML = "";
+
+  forecastData.forEach(function (period) {
+    // Create a forecast period element from the template
+    const periodElement = createForecastPeriodElement(period);
+
+    // Append the customized period element to the popup content
+    popupContent.appendChild(periodElement);
+  });
+
+  // Display the Tailwind CSS modal with updated title
+  document.getElementById(
+    "forecastModalLabel"
+  ).textContent = `Forecast Details: 
+      ${clickedCoordinate[1].toFixed(6)}, 
+      ${clickedCoordinate[0].toFixed(6)}`;
+  document.getElementById("forecastModal").classList.remove("hidden");
+
+  // Add event listener for the close button
+  document
+    .getElementById("closeForecastModalBtn")
+    .addEventListener("click", function () {
+      document.getElementById("forecastModal").classList.add("hidden");
+    });
+
+  console.log("Successfully pulled data with contents in popup window.");
+}
+
+// Function to handle the case when no data is available
+function handleNoData(clickedCoordinate) {
+  console.log("No data available or API could not retrieve data.");
+
+  // Display a unique popup to show no data
+  const noDataContent = document.getElementById("no-data-content");
+  noDataContent.innerHTML = "Try again or select another area.";
+  noDataContent.classList.remove("hidden");
+
+  // Set the label for the no-data modal
+  document.getElementById("noDataModalLabel").textContent = `No Data Available: 
+      ${clickedCoordinate[1].toFixed(6)}, 
+      ${clickedCoordinate[0].toFixed(6)}`;
+
+  // Display the Tailwind CSS no-data modal
+  document.getElementById("noDataModal").classList.remove("hidden");
+
+  // Add event listener for the close button in the No Data Modal
+  document
+    .getElementById("closeNoDataModalBtn")
+    .addEventListener("click", function () {
+      document.getElementById("noDataModal").classList.add("hidden");
+    });
+}
+
+// Function to show the loading overlay
+function showLoadingOverlay() {
+  document.getElementById("loadingOverlay").classList.remove("hidden");
+}
+
+// Function to hide the loading overlay
+function hideLoadingOverlay() {
+  document.getElementById("loadingOverlay").classList.add("hidden");
+}
+
+// Add a click event handler to capture coordinates and initiate the process
 map.on("singleclick", function (event) {
   const clickedCoordinate = ol.proj.toLonLat(event.coordinate);
 
-  // Check if the clicked coordinate is within the continental U.S. extent
-  if (
-    clickedCoordinate[0] >= continentalUSExtent[0] &&
-    clickedCoordinate[0] <= continentalUSExtent[2] &&
-    clickedCoordinate[1] >= continentalUSExtent[1] &&
-    clickedCoordinate[1] <= continentalUSExtent[3]
-  ) {
-    // Send the clicked coordinates to the server and handle the response
-    const url = "/fetch-analyze-forecast";
-    const data = {
-      latitude: clickedCoordinate[1],
-      longitude: clickedCoordinate[0],
-    };
-    console.log("Fetching data from weather API...");
+  if (isWithinUSExtent(clickedCoordinate)) {
+    showLoadingOverlay();
 
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (forecastData) {
+    fetchDataFromServer(clickedCoordinate[1], clickedCoordinate[0])
+      .then((forecastData) => {
+        hideLoadingOverlay();
+
         if (forecastData.length) {
-          // Create the content for the popup
-          const popupContent = document.getElementById("popup-content");
-          popupContent.innerHTML = "";
-
-          // Create a single row for forecast periods
-          const row = document.createElement("div");
-          row.className = "flex"; // Use Tailwind CSS flex class
-
-          forecastData.forEach(function (period) {
-            const periodDiv = document.createElement("div");
-            periodDiv.className = "p-4"; // Adjust the padding as needed
-
-            // Add the image
-            const img = document.createElement("img");
-            img.className = "forecast-period-image";
-            img.src = period.img_icon;
-            periodDiv.appendChild(img);
-
-            // Create a div for the text content
-            const textDiv = document.createElement("div");
-            textDiv.className = "forecast-text text-center mt-2"; // Adjust margin-top as needed
-
-            // Center align the first line of text
-            textDiv.innerHTML += `<div class="font-bold">${period.name}</div>Temperature: ${period.temp}`;
-
-            // Add the "See Details" button
-            const seeDetailsButton = document.createElement("button");
-            seeDetailsButton.innerHTML = "See Details";
-            seeDetailsButton.className =
-              "mt-2 bg-blue-500 text-white px-2 py-1 rounded";
-            seeDetailsButton.addEventListener("click", function () {
-              // Toggle the visibility of the details
-              detailsDiv.style.display =
-                detailsDiv.style.display === "none" ? "block" : "none";
-            });
-
-            textDiv.appendChild(seeDetailsButton);
-
-            // Add a hidden div for the forecast details
-            const detailsDiv = document.createElement("div");
-            detailsDiv.innerHTML = `Forecast: ${period.details}`;
-            detailsDiv.style.display = "none"; // Initially hide the details
-            textDiv.appendChild(detailsDiv);
-
-            periodDiv.appendChild(textDiv);
-
-            // Append each period vertically
-            document.getElementById("popup-content").appendChild(periodDiv);
-          });
-
-          // Append the row to the popup content
-          popupContent.appendChild(row);
-
-          // Display the Tailwind CSS modal with updated title
-          document.getElementById(
-            "forecastModalLabel"
-          ).textContent = `Forecast Details: 
-            ${clickedCoordinate[1].toFixed(6)}, 
-            ${clickedCoordinate[0].toFixed(6)}`;
-          document.getElementById("forecastModal").classList.remove("hidden");
-
-          // Add event listener for the close button
-          document
-            .getElementById("closeForecastModalBtn")
-            .addEventListener("click", function () {
-              document.getElementById("forecastModal").classList.add("hidden");
-            });
-
-          console.log(
-            "Successfully pulled data with contents in popup window."
-          );
+          handleForecastData(clickedCoordinate, forecastData);
         } else {
-          console.log("No data available or API could not retrieve data.");
-          // Display a unique popup to show no data
-          const noDataContent = document.getElementById("no-data-content");
-          noDataContent.innerHTML = "Try again or select another area.";
-          noDataContent.classList.remove("hidden");
-
-          // Set the label for the no-data modal
-          document.getElementById(
-            "noDataModalLabel"
-          ).textContent = `No Data Available: 
-            ${clickedCoordinate[1].toFixed(6)}, 
-            ${clickedCoordinate[0].toFixed(6)}`;
-
-          // Display the Tailwind CSS no-data modal
-          document.getElementById("noDataModal").classList.remove("hidden");
-
-          // Add event listener for the close button in the No Data Modal
-          document
-            .getElementById("closeNoDataModalBtn")
-            .addEventListener("click", function () {
-              document.getElementById("noDataModal").classList.add("hidden");
-            });
+          handleNoData(clickedCoordinate);
         }
       })
-      .catch(function (error) {
+      .catch((error) => {
+        hideLoadingOverlay();
         console.error("An error occurred:", error);
       });
   } else {

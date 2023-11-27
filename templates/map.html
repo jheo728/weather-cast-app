@@ -8,7 +8,7 @@
     <!-- Include Tailwind CSS -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.css"
     />
 
     <link
@@ -24,30 +24,71 @@
     <!-- Basemap -->
     <div id="map" class="map"></div>
 
+    <!-- Loading Overlay -->
+    <div
+      id="loadingOverlay"
+      class="fixed inset-0 bg-gray-800 bg-opacity-75 z-50 hidden"
+    >
+      <div class="flex items-center justify-center h-screen">
+        <div
+          class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"
+        ></div>
+      </div>
+    </div>
+
     <!-- Forecast Modal -->
     <div
-      class="modal hidden fixed inset-0 overflow-y-auto backdrop-filter backdrop-blur"
+      class="modal hidden fixed inset-0 backdrop-filter backdrop-blur pt-20"
       id="forecastModal"
       aria-modal="true"
       aria-labelledby="forecastModalLabel"
     >
-      <div class="flex items-center justify-center min-h-screen">
-        <div class="bg-white mx-auto w-4/5 p-4 rounded-lg relative">
+      <div class="flex items-start justify-center">
+        <div
+          class="bg-white w-3/5 p-4 rounded-lg relative"
+          style="max-height: 75vh; overflow-y: auto"
+        >
           <!-- Close button -->
           <button
             type="button"
-            class="absolute top-0 right-0 mt-2 mr-4 p-2 text-xl md:text-2xl lg:text-3xl xl:text-4xl"
+            class="absolute top-0 right-0 mr-1 text-xl md:text-2xl lg:text-3xl xl:text-4xl"
             aria-label="Close"
             id="closeForecastModalBtn"
           >
             <span aria-hidden="true">&times;</span>
           </button>
           <!-- Modal content -->
-          <div class="modal-header">
+          <div>
             <h5 class="modal-title" id="forecastModalLabel"></h5>
           </div>
           <div class="modal-body">
             <div id="popup-content" class="column"></div>
+            <!-- Hidden template for forecast period -->
+            <template id="forecastPeriodTemplate">
+              <div class="flex p-4 flex-col justify-center">
+                <div class="flex">
+                  <div
+                    class="flex flex-col text-center items-center mr-4 text-xs w-20 whitespace-normal"
+                  >
+                    <div class="font-bold" data-id="periodName"></div>
+                    <img class="forecast-period-image" data-id="imgIcon" />
+                    <div data-id="shortForecast"></div>
+                  </div>
+                  <div class="flex flex-col items-center justify-center">
+                    <div data-id="tempPrecip"></div>
+                  </div>
+                </div>
+                <div class="text-center mt-2">
+                  <button
+                    class="bg-blue-500 text-white px-2 py-1 rounded"
+                    data-id="seeDetailsBtn"
+                  >
+                    See Details
+                  </button>
+                  <div data-id="details" style="display: none"></div>
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -59,7 +100,7 @@
       id="noDataModal"
     >
       <div class="flex items-center justify-center min-h-screen">
-        <div class="bg-white mx-auto w-4/5 p-4 rounded-lg relative">
+        <div class="bg-white mx-auto w-2/5 p-4 rounded-lg relative">
           <!-- Close button -->
           <button
             type="button"
@@ -70,7 +111,7 @@
             <span aria-hidden="true">&times;</span>
           </button>
           <!-- Modal content -->
-          <div class="modal-header">
+          <div class="modal-title">
             <h5 class="modal-title" id="noDataModalLabel"></h5>
           </div>
           <div class="modal-body">
