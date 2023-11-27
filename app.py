@@ -21,12 +21,26 @@ def fetch_analyze_forecast():
         
         # Use the received latitude and longitude in your forecast_query function
         forecast_data = forecast_query(endpoint='points', lat=latitude, lon=longitude)
-        
+
         # Ensure that data was fetched from the API endpoint and stored in variable
         if forecast_data:
             # Limit to 5 forecast days (day/evening forecast periods)
             forecast_periods = forecast_data['properties']['periods'][:10]
-            forecast_simplified = [{'number': x['number'], 'name': x['name'], 'temp': str(x['temperature'])+'F', 'details': x['detailedForecast'], 'img_icon': x['icon']} for x in forecast_periods]
+            forecast_simplified = [
+                {
+                    'number': x['number'],
+                    'name': x['name'],
+                    'start_time': x['startTime'],
+                    'precip_chance': x['probabilityOfPrecipitation']['value'],
+                    'relative_humidity': x['relativeHumidity']['value'],
+                    'wind': f"{x['windDirection']} {x['windSpeed']}",
+                    'temp': str(x['temperature']) + 'F',
+                    'short_forecast': x['shortForecast'],
+                    'details': x['detailedForecast'],
+                    'img_icon': x['icon']
+                }
+                for x in forecast_periods
+            ]
 
             return jsonify(forecast_simplified)
     
