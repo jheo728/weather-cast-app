@@ -3,18 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Flask App</title>
+    <title>WeatherCast</title>
 
-    <!-- Bootstrap CSS -->
+    <!-- Include Tailwind CSS -->
     <link
       rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.css"
     />
-
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <link
       rel="stylesheet"
@@ -29,30 +24,215 @@
     <!-- Basemap -->
     <div id="map" class="map"></div>
 
+    <!-- Introductory Overlay -->
+    <div
+      id="introOverlay"
+      class="modal hidden fixed inset-0 backdrop-filter backdrop-blur pt-20"
+    >
+      <div class="flex items-center justify-center h-screen">
+        <div class="max-w-2xl p-6 text-center">
+          <h2 class="text-4xl font-bold mb-8" style="letter-spacing: 1em">
+            <span class="text-5xl">W</span>EATHER<span class="text-5xl">C</span
+            >AST
+          </h2>
+          <ul class="text-xl text-left list-disc text-gray-700 font-bold">
+            How to use:
+            <ul class="list-decimal pl-12 font-normal">
+              <li>
+                Click on the map for the desired location's weather forecast.
+              </li>
+              <li>A popup will appear with a 5-day forecast with details.</li>
+              <li>
+                Scroll to see additional forecast days; data is sorted in
+                descending order by date.
+              </li>
+            </ul>
+          </ul>
+          <br />
+          <ul class="text-left list-disc italic text-gray-700">
+            Notes:
+            <ul class="list-disc pl-12">
+              <li>
+                Weather forecast data is from the National Weather Service (NWS)
+                API.
+              </li>
+              <li>Data is restricted to the contiguous United States.</li>
+            </ul>
+          </ul>
+          <button
+            id="closeIntroOverlayBtn"
+            class="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Okay!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button
+      id="showIntroButton"
+      class="text-xs fixed bottom-4 left-4 bg-blue-400 text-white px-4 py-2 rounded"
+    >
+      Show Intro
+    </button>
+
+    <!-- Loading Overlay -->
+    <div
+      id="loadingOverlay"
+      class="fixed inset-0 bg-gray-800 bg-opacity-75 z-50 hidden"
+    >
+      <div class="flex items-center justify-center h-screen">
+        <div
+          class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"
+        ></div>
+      </div>
+    </div>
+
     <!-- Forecast Modal -->
     <div
-      class="modal fade"
+      class="modal hidden fixed inset-0 backdrop-filter backdrop-blur pt-20"
       id="forecastModal"
-      tabindex="-1"
-      role="dialog"
+      aria-modal="true"
       aria-labelledby="forecastModalLabel"
-      aria-hidden="true"
     >
-      <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="forecastModalLabel"></h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
+      <div class="flex items-start justify-center">
+        <div class="bg-white max-w-xl rounded-lg relative">
+          <!-- Fixed header -->
+          <div class="flex items-center mx-4 my-2">
+            <h5 class="font-bold">Weather Forecast -</h5>
+            <h5 class="ml-2 text-sm" id="forecastModalLabel"></h5>
+            <h6
+              class="right-0 mx-4 mt-1 text-xs text-gray-500 italic"
+              id="lastUpdateLabel"
+            ></h6>
           </div>
+
+          <!-- Close button -->
+          <button
+            type="button"
+            class="absolute top-0 right-0 mr-1 text-xl md:text-2xl lg:text-3xl xl:text-4xl"
+            aria-label="Close"
+            id="closeForecastModalBtn"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+
+          <hr class="border-t-2 border-gray-300" />
+
+          <!-- Modal content -->
           <div class="modal-body">
-            <div id="popup-content" class="column"></div>
+            <div id="popup-content" class="my-6 column"></div>
+            <!-- Hidden template for forecast period -->
+            <template id="forecastPeriodTemplate">
+              <div class="flex mx-8 flex-col items-center">
+                <div class="flex text-sm">
+                  <div
+                    class="flex flex-col text-xs text-center items-center mr-10 w-20 whitespace-normal"
+                  >
+                    <div class="font-bold" data-id="periodName"></div>
+                    <img
+                      class="forecast-period-image rounded"
+                      data-id="imgIcon"
+                    />
+                    <div data-id="shortForecast"></div>
+                  </div>
+                  <div
+                    class="flex text-center items-center justify-center space-x-12"
+                  >
+                    <div class="flex flex-col items-center justify-center">
+                      <svg
+                        class="feather feather-thermometer"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="35"
+                        height="35"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path
+                          d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"
+                        ></path>
+                      </svg>
+                      <div data-id="temp"></div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center">
+                      <svg
+                        class="feather feather-cloud-rain text-blue-500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="35"
+                        height="35"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <line x1="16" y1="13" x2="16" y2="21"></line>
+                        <line x1="8" y1="13" x2="8" y2="21"></line>
+                        <line x1="12" y1="15" x2="12" y2="23"></line>
+                        <path
+                          d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"
+                        ></path>
+                      </svg>
+                      <div data-id="precipChance"></div>
+                    </div>
+                    <div class="w-16 flex flex-col items-center justify-center">
+                      <svg
+                        class="feather feather-wind"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="35"
+                        height="35"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path
+                          d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"
+                        ></path>
+                      </svg>
+                      <div data-id="wind"></div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center">
+                      <svg
+                        class="feather feather-droplet text-blue-200"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="35"
+                        height="35"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                      </svg>
+                      <div data-id="relativeHumidity"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-center my-2 max-w-sm">
+                  <button
+                    class="bg-blue-400 text-white px-2 py-1 rounded"
+                    data-id="seeDetailsBtn"
+                  >
+                    Detailed Forecast
+                  </button>
+                  <div
+                    class="text-sm my-2"
+                    data-id="details"
+                    style="display: none"
+                  ></div>
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -60,28 +240,26 @@
 
     <!-- No Data Modal -->
     <div
-      class="modal fade"
+      class="modal hidden fixed inset-0 overflow-y-auto backdrop-filter backdrop-blur-sm"
       id="noDataModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="noDataModalLabel"
-      aria-hidden="true"
     >
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
+      <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white mx-auto w-2/5 p-4 rounded-lg relative">
+          <!-- Close button -->
+          <button
+            type="button"
+            class="absolute top-0 right-0 mt-2 mr-4 p-2 text-4xl"
+            aria-label="Close"
+            id="closeNoDataModalBtn"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <!-- Modal content -->
+          <div class="modal-title">
             <h5 class="modal-title" id="noDataModalLabel"></h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
           </div>
           <div class="modal-body">
-            <div id="no-data-content"></div>
+            <div id="no-data-content" class="column"></div>
           </div>
         </div>
       </div>
