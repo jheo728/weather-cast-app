@@ -132,19 +132,22 @@ function handleForecastData(geocodeData, forecastData) {
     }
   });
 
+  const forecastModal = document.getElementById("forecastModal");
   const [cityTown, state] = extractGeoData(geocodeData);
 
   // Display the Tailwind CSS modal with updated title
   document.getElementById(
     "forecastModalLabel"
   ).textContent = `${cityTown}, ${state}`;
-  document.getElementById("forecastModal").classList.remove("hidden");
+  forecastModal.classList.remove("hidden");
 
   // Add event listener for the close button
   document
     .getElementById("closeForecastModalBtn")
     .addEventListener("click", function () {
-      document.getElementById("forecastModal").classList.add("hidden");
+      // Set the scrollTop property to 0 to ensure the modal starts at the top of the scroll
+      forecastModal.querySelector(".modal-body").scrollTop = 0;
+      forecastModal.classList.add("hidden");
     });
 
   console.log("Successfully pulled data with contents in popup window.");
@@ -237,6 +240,10 @@ map.on("singleclick", async function (event) {
   }
 });
 
+// Cache the intro overlay element
+const introOverlay = document.getElementById("introOverlay");
+const showIntroButton = document.getElementById("showIntroButton");
+
 // Function to check if the intro overlay has been seen
 function hasSeenIntro() {
   return localStorage.getItem("introSeen") === "true";
@@ -247,49 +254,30 @@ function setIntroSeen() {
   localStorage.setItem("introSeen", "true");
 }
 
-// Function to show the introductory overlay
-function showIntroOverlay() {
-  document.getElementById("introOverlay").classList.remove("hidden");
-}
-
-// Function to hide the introductory overlay
-function hideIntroOverlay() {
-  document.getElementById("introOverlay").classList.add("hidden");
-}
-
-// Show the intro overlay only if it hasn't been seen before
-document.addEventListener("DOMContentLoaded", function () {
-  if (!hasSeenIntro()) {
-    showIntroOverlay();
-    document.getElementById("showIntroButton").textContent = "Close Intro";
-  }
-});
-
 // Function to show or hide the introductory overlay based on its current state
 function toggleIntroOverlay() {
-  const introOverlay = document.getElementById("introOverlay");
-
-  if (introOverlay.classList.contains("hidden")) {
-    showIntroOverlay();
-    document.getElementById("showIntroButton").textContent = "Close Intro";
-  } else {
-    hideIntroOverlay();
-    document.getElementById("showIntroButton").textContent = "Show Intro";
-  }
+  introOverlay.classList.toggle("hidden");
+  showIntroButton.textContent = introOverlay.classList.contains("hidden")
+    ? "Show Intro"
+    : "Close Intro";
 }
 
 // Function to handle the click event on the "Show Intro" button
-document
-  .getElementById("showIntroButton")
-  .addEventListener("click", function () {
-    toggleIntroOverlay();
-  });
+showIntroButton.addEventListener("click", toggleIntroOverlay);
 
 // Close the intro overlay when the "Proceed" button is clicked
 document
   .getElementById("closeIntroOverlayBtn")
   .addEventListener("click", function () {
-    hideIntroOverlay();
+    introOverlay.classList.add("hidden");
     setIntroSeen();
-    document.getElementById("showIntroButton").textContent = "Show Intro";
+    showIntroButton.textContent = "Show Intro";
   });
+
+// Show the intro overlay only if it hasn't been seen before
+document.addEventListener("DOMContentLoaded", function () {
+  if (!hasSeenIntro()) {
+    introOverlay.classList.remove("hidden");
+    showIntroButton.textContent = "Close Intro";
+  }
+});
