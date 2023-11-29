@@ -114,10 +114,15 @@ function extractGeoData(geocodeData) {
 
 // Function to handle the forecast data and update the UI
 function handleForecastData(geocodeData, forecastData) {
-  const popupContent = document.getElementById("popup-content");
-  popupContent.innerHTML = "";
+  console.log("Starting handleForecastData...");
 
-  forecastData.forEach(function (period, index) {
+  const popupContent = document.getElementById("popup-content");
+  popupContent.textContent = "";
+
+  // Access dict obj with specific key containing forecast_content list obj
+  const forecastContentList = forecastData["forecast_content"];
+
+  forecastContentList.forEach(function (period, index) {
     // Create a forecast period element from the template
     const periodElement = createForecastPeriodElement(period);
 
@@ -125,7 +130,7 @@ function handleForecastData(geocodeData, forecastData) {
     popupContent.appendChild(periodElement);
 
     // Add a horizontal line after every period except the last one
-    if (index < forecastData.length - 1) {
+    if (index < forecastContentList.length - 1) {
       const hrElement = document.createElement("hr");
       hrElement.className = "my-4 border-t-2 border-gray-300";
       popupContent.appendChild(hrElement);
@@ -135,10 +140,29 @@ function handleForecastData(geocodeData, forecastData) {
   const forecastModal = document.getElementById("forecastModal");
   const [cityTown, state] = extractGeoData(geocodeData);
 
+  // Access dict obj for last updated timestamp for weather data
+  const lastUpdatedRaw = forecastData["last_update_time"];
+  const timeOptions = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  };
+  const lastUpdated = new Date(lastUpdatedRaw).toLocaleString(
+    "en-US",
+    timeOptions
+  );
+
+  document.getElementById(
+    "lastUpdateLabel"
+  ).textContent = `As of ${lastUpdated}`;
+
   // Display the Tailwind CSS modal with updated title
   document.getElementById(
     "forecastModalLabel"
   ).textContent = `${cityTown}, ${state}`;
+
   forecastModal.classList.remove("hidden");
 
   // Add event listener for the close button
@@ -220,7 +244,7 @@ map.on("singleclick", async function (event) {
 
       hideLoadingOverlay();
 
-      if (forecastData.length) {
+      if (forecastData?.forecast_content?.length > 0) {
         // Reverse geocode to get city, state, ZIP code
         const geocodeData = await reverseGeocode(
           clickedCoordinate[1],
