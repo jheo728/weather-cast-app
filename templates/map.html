@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Flask App</title>
+    <title>WeatherCast</title>
 
     <!-- Include Tailwind CSS -->
     <link
@@ -30,11 +30,14 @@
       class="modal hidden fixed inset-0 backdrop-filter backdrop-blur pt-20"
     >
       <div class="flex items-center justify-center h-screen">
-        <div class="max-w-2xl p-6 bg-white rounded-lg text-center">
-          <h2 class="text-2xl font-bold mb-4">Weather Simp</h2>
-          <ul class="text-left list-disc text-gray-700">
+        <div class="max-w-2xl p-6 text-center">
+          <h2 class="text-4xl font-bold mb-8" style="letter-spacing: 1em">
+            <span class="text-5xl">W</span>EATHER<span class="text-5xl">C</span
+            >AST
+          </h2>
+          <ul class="text-xl text-left list-disc text-gray-700 font-bold">
             How to use:
-            <ul class="list-disc pl-4">
+            <ul class="list-decimal pl-12 font-normal">
               <li>
                 Click on the map for the desired location's weather forecast.
               </li>
@@ -48,7 +51,7 @@
           <br />
           <ul class="text-left list-disc italic text-gray-700">
             Notes:
-            <ul class="list-disc pl-4">
+            <ul class="list-disc pl-12">
               <li>
                 Weather forecast data is from the National Weather Service (NWS)
                 API.
@@ -60,7 +63,7 @@
             id="closeIntroOverlayBtn"
             class="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
           >
-            Proceed
+            Okay!
           </button>
         </div>
       </div>
