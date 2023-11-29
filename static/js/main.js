@@ -182,7 +182,9 @@ function handleNoData(clickedCoordinate) {
   console.log("No data available or API could not retrieve data.");
 
   // Set the label for the no-data modal
-  document.getElementById("noDataModalLabel").textContent = `No Data Available: 
+  document.getElementById(
+    "noDataModalLabel"
+  ).textContent = `No Data Available at 
     ${clickedCoordinate[1].toFixed(6)}, 
     ${clickedCoordinate[0].toFixed(6)}`;
 
