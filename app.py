@@ -34,7 +34,7 @@ def fetch_analyze_forecast():
                     'precip_chance': x['probabilityOfPrecipitation']['value'],
                     'relative_humidity': x['relativeHumidity']['value'],
                     'wind': f"{x['windDirection']} {x['windSpeed']}",
-                    'temp': str(x['temperature']) + 'F',
+                    'temp': str(x['temperature']),
                     'short_forecast': x['shortForecast'],
                     'details': x['detailedForecast'],
                     'img_icon': x['icon']
