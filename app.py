@@ -24,9 +24,11 @@ def fetch_analyze_forecast():
 
         # Ensure that data was fetched from the API endpoint and stored in variable
         if forecast_data:
+            updated_time = forecast_data['properties']['updated']
+
             # Limit to 5 forecast days (day/evening forecast periods)
             forecast_periods = forecast_data['properties']['periods'][:10]
-            forecast_simplified = [
+            forecast_content = [
                 {
                     'number': x['number'],
                     'name': x['name'],
@@ -41,6 +43,11 @@ def fetch_analyze_forecast():
                 }
                 for x in forecast_periods
             ]
+
+            forecast_simplified = {
+                "last_update_time": updated_time,
+                "forecast_content": forecast_content
+            }
 
             return jsonify(forecast_simplified)
     
