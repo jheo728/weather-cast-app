@@ -63,16 +63,23 @@ function createForecastPeriodElement(period) {
   const templateContent = forecastPeriodTemplate.content.cloneNode(true);
 
   // Customize the cloned template with period data
+  templateContent.querySelector("[data-id='imgIcon']").src = period.img_icon;
+  templateContent.querySelector("[data-id='wind']").textContent = period.wind;
+  templateContent.querySelector(
+    "[data-id='temp']"
+  ).textContent = `${period.temp}° F`;
   templateContent.querySelector("[data-id='periodName']").textContent =
     period.name;
-  templateContent.querySelector("[data-id='imgIcon']").src = period.img_icon;
-  templateContent.querySelector("[data-id='tempPrecip']").innerHTML = `${
-    period.temp
-  } ${period.precip_chance ?? 0}`;
   templateContent.querySelector("[data-id='shortForecast']").textContent =
     period.short_forecast;
   templateContent.querySelector("[data-id='details']").textContent =
     period.details;
+  templateContent.querySelector("[data-id='precipChance']").textContent = `${
+    period.precip_chance ?? 0
+  }%`;
+  templateContent.querySelector(
+    "[data-id='relativeHumidity']"
+  ).textContent = `${period.relative_humidity ?? 0}%`;
 
   const seeDetailsBtn = templateContent.querySelector(
     "[data-id='seeDetailsBtn']"
@@ -85,31 +92,52 @@ function createForecastPeriodElement(period) {
       detailsDiv.style.display === "none" ? "block" : "none";
     // Update button text based on current text
     this.textContent =
-      this.textContent.trim() === "See Details" ? "Collapse" : "See Details";
+      this.textContent.trim() === "Detailed Forecast"
+        ? "Collapse"
+        : "Detailed Forecast";
   });
 
   return templateContent;
 }
 
+// Function to extract various metadata from reverse geocoded data
+function extractGeoData(geocodeData) {
+  const cityTown = geocodeData.address.city
+    ? geocodeData.address.city
+    : geocodeData.address.town
+    ? geocodeData.address.town
+    : `[${geocodeData.lat}, ${geocodeData.lon}]`;
+  const state = geocodeData.address["ISO3166-2-lvl4"].slice(-2);
+
+  return [cityTown, state];
+}
+
 // Function to handle the forecast data and update the UI
-function handleForecastData(clickedCoordinate, forecastData) {
+function handleForecastData(geocodeData, forecastData) {
   const popupContent = document.getElementById("popup-content");
   popupContent.innerHTML = "";
 
-  forecastData.forEach(function (period) {
+  forecastData.forEach(function (period, index) {
     // Create a forecast period element from the template
     const periodElement = createForecastPeriodElement(period);
 
     // Append the customized period element to the popup content
     popupContent.appendChild(periodElement);
+
+    // Add a horizontal line after every period except the last one
+    if (index < forecastData.length - 1) {
+      const hrElement = document.createElement("hr");
+      hrElement.className = "my-4 border-t-2 border-gray-300";
+      popupContent.appendChild(hrElement);
+    }
   });
+
+  const [cityTown, state] = extractGeoData(geocodeData);
 
   // Display the Tailwind CSS modal with updated title
   document.getElementById(
     "forecastModalLabel"
-  ).textContent = `Forecast Details: 
-      ${clickedCoordinate[1].toFixed(6)}, 
-      ${clickedCoordinate[0].toFixed(6)}`;
+  ).textContent = `${cityTown}, ${state}`;
   document.getElementById("forecastModal").classList.remove("hidden");
 
   // Add event listener for the close button
@@ -126,18 +154,18 @@ function handleForecastData(clickedCoordinate, forecastData) {
 function handleNoData(clickedCoordinate) {
   console.log("No data available or API could not retrieve data.");
 
-  // Display a unique popup to show no data
-  const noDataContent = document.getElementById("no-data-content");
-  noDataContent.innerHTML = "Try again or select another area.";
-  noDataContent.classList.remove("hidden");
-
   // Set the label for the no-data modal
   document.getElementById("noDataModalLabel").textContent = `No Data Available: 
-      ${clickedCoordinate[1].toFixed(6)}, 
-      ${clickedCoordinate[0].toFixed(6)}`;
+    ${clickedCoordinate[1].toFixed(6)}, 
+    ${clickedCoordinate[0].toFixed(6)}`;
 
   // Display the Tailwind CSS no-data modal
   document.getElementById("noDataModal").classList.remove("hidden");
+
+  // Display a unique popup to show no data
+  const noDataContent = document.getElementById("no-data-content");
+  noDataContent.textContent = "Try again or select another area.";
+  noDataContent.classList.remove("hidden");
 
   // Add event listener for the close button in the No Data Modal
   document
@@ -157,28 +185,111 @@ function hideLoadingOverlay() {
   document.getElementById("loadingOverlay").classList.add("hidden");
 }
 
+async function reverseGeocode(latitude, longitude) {
+  const baseUrl = "https://nominatim.openstreetmap.org/reverse";
+  const format = "json";
+  const zoom = 10;
+
+  const url = `${baseUrl}?format=${format}&lat=${latitude}&lon=${longitude}&zoom=${zoom}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error in reverse geocoding:", error);
+    throw error;
+  }
+}
+
 // Add a click event handler to capture coordinates and initiate the process
-map.on("singleclick", function (event) {
+map.on("singleclick", async function (event) {
   const clickedCoordinate = ol.proj.toLonLat(event.coordinate);
 
   if (isWithinUSExtent(clickedCoordinate)) {
     showLoadingOverlay();
 
-    fetchDataFromServer(clickedCoordinate[1], clickedCoordinate[0])
-      .then((forecastData) => {
-        hideLoadingOverlay();
+    try {
+      const forecastData = await fetchDataFromServer(
+        clickedCoordinate[1],
+        clickedCoordinate[0]
+      );
 
-        if (forecastData.length) {
-          handleForecastData(clickedCoordinate, forecastData);
-        } else {
-          handleNoData(clickedCoordinate);
-        }
-      })
-      .catch((error) => {
-        hideLoadingOverlay();
-        console.error("An error occurred:", error);
-      });
+      hideLoadingOverlay();
+
+      if (forecastData.length) {
+        // Reverse geocode to get city, state, ZIP code
+        const geocodeData = await reverseGeocode(
+          clickedCoordinate[1],
+          clickedCoordinate[0]
+        );
+
+        handleForecastData(geocodeData, forecastData);
+      } else {
+        handleNoData(clickedCoordinate);
+      }
+    } catch (error) {
+      hideLoadingOverlay();
+      console.error("An error occurred:", error);
+    }
   } else {
     console.log("Invalid area, select another area for weather data forecast.");
   }
 });
+
+// Function to check if the intro overlay has been seen
+function hasSeenIntro() {
+  return localStorage.getItem("introSeen") === "true";
+}
+
+// Function to set the intro overlay as seen
+function setIntroSeen() {
+  localStorage.setItem("introSeen", "true");
+}
+
+// Function to show the introductory overlay
+function showIntroOverlay() {
+  document.getElementById("introOverlay").classList.remove("hidden");
+}
+
+// Function to hide the introductory overlay
+function hideIntroOverlay() {
+  document.getElementById("introOverlay").classList.add("hidden");
+}
+
+// Show the intro overlay only if it hasn't been seen before
+document.addEventListener("DOMContentLoaded", function () {
+  if (!hasSeenIntro()) {
+    showIntroOverlay();
+    document.getElementById("showIntroButton").textContent = "Close Intro";
+  }
+});
+
+// Function to show or hide the introductory overlay based on its current state
+function toggleIntroOverlay() {
+  const introOverlay = document.getElementById("introOverlay");
+
+  if (introOverlay.classList.contains("hidden")) {
+    showIntroOverlay();
+    document.getElementById("showIntroButton").textContent = "Close Intro";
+  } else {
+    hideIntroOverlay();
+    document.getElementById("showIntroButton").textContent = "Show Intro";
+  }
+}
+
+// Function to handle the click event on the "Show Intro" button
+document
+  .getElementById("showIntroButton")
+  .addEventListener("click", function () {
+    toggleIntroOverlay();
+  });
+
+// Close the intro overlay when the "Proceed" button is clicked
+document
+  .getElementById("closeIntroOverlayBtn")
+  .addEventListener("click", function () {
+    hideIntroOverlay();
+    setIntroSeen();
+    document.getElementById("showIntroButton").textContent = "Show Intro";
+  });

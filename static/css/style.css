@@ -7,10 +7,7 @@
 .modal-body {
   flex: 1; /* Use flex for the modal body */
   overflow-y: auto;
-}
-
-.modal-title {
-  font-weight: bold;
+  max-height: 75vh;
 }
 
 /* Style for the forecastModal content to enable scrolling and add vertical line */
