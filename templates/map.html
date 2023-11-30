@@ -92,13 +92,16 @@
 
     <!-- Forecast Modal -->
     <div
-      class="modal hidden fixed inset-0 backdrop-filter backdrop-blur pt-20 text-xs sm:text-sm md:text-base"
+      class="modal hidden fixed inset-0 backdrop-filter backdrop-blur pt-10 text-xs sm:text-sm md:text-base"
       id="forecastModal"
       aria-modal="true"
       aria-labelledby="forecastModalLabel"
     >
       <div class="flex items-start justify-center">
-        <div class="md:max-w-1xl bg-white rounded-lg relative">
+        <div
+          class="bg-white rounded-lg relative"
+          style="width: 83.33%; max-width: 500px"
+        >
           <!-- Fixed header -->
           <div class="flex flex-wrap items-center mx-4 my-2">
             <h5 class="font-bold">Weather Forecast -</h5>
@@ -129,7 +132,7 @@
               <div class="flex mx-4 flex-col items-center">
                 <div class="flex text-sm">
                   <div
-                    class="flex flex-col flex-wrap text-xs text-center items-center mr-5 w-20 whitespace-normal"
+                    class="flex flex-col flex-wrap text-xs text-center items-center mr-8 w-20 whitespace-normal"
                   >
                     <div class="font-bold" data-id="periodName"></div>
                     <img
