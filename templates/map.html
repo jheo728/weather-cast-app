@@ -27,15 +27,17 @@
     <!-- Introductory Overlay -->
     <div
       id="introOverlay"
-      class="modal hidden fixed inset-0 backdrop-filter backdrop-blur pt-20"
+      class="modal overflow-y-auto hidden fixed inset-0 max-h-screen flex items-center justify-center backdrop-filter backdrop-blur pt-20 text-xs sm:text-base md:text-lg lg:text-xl"
     >
       <div class="flex items-center justify-center h-screen">
         <div class="max-w-2xl p-6 text-center">
-          <h2 class="text-4xl font-bold mb-8" style="letter-spacing: 1em">
-            <span class="text-5xl">W</span>EATHER<span class="text-5xl">C</span
-            >AST
+          <h2
+            class="xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-8"
+            style="letter-spacing: 1em"
+          >
+            WEATHERCAST
           </h2>
-          <ul class="text-xl text-left list-disc text-gray-700 font-bold">
+          <ul class="text-left list-disc text-gray-700 font-bold">
             How to use:
             <ul class="list-decimal pl-12 font-normal">
               <li>
@@ -90,15 +92,15 @@
 
     <!-- Forecast Modal -->
     <div
-      class="modal hidden fixed inset-0 backdrop-filter backdrop-blur pt-20"
+      class="modal hidden fixed inset-0 backdrop-filter backdrop-blur pt-20 text-xs sm:text-sm md:text-base"
       id="forecastModal"
       aria-modal="true"
       aria-labelledby="forecastModalLabel"
     >
       <div class="flex items-start justify-center">
-        <div class="bg-white max-w-xl rounded-lg relative">
+        <div class="md:max-w-1xl bg-white rounded-lg relative">
           <!-- Fixed header -->
-          <div class="flex items-center mx-4 my-2">
+          <div class="flex flex-wrap items-center mx-4 my-2">
             <h5 class="font-bold">Weather Forecast -</h5>
             <h5 class="ml-2 text-sm" id="forecastModalLabel"></h5>
             <h6
@@ -124,10 +126,10 @@
             <div id="popup-content" class="my-6 column"></div>
             <!-- Hidden template for forecast period -->
             <template id="forecastPeriodTemplate">
-              <div class="flex mx-8 flex-col items-center">
+              <div class="flex mx-4 flex-col items-center">
                 <div class="flex text-sm">
                   <div
-                    class="flex flex-col text-xs text-center items-center mr-10 w-20 whitespace-normal"
+                    class="flex flex-col flex-wrap text-xs text-center items-center mr-5 w-20 whitespace-normal"
                   >
                     <div class="font-bold" data-id="periodName"></div>
                     <img
@@ -137,14 +139,15 @@
                     <div data-id="shortForecast"></div>
                   </div>
                   <div
-                    class="flex text-center items-center justify-center space-x-12"
+                    class="mt-8 flex flex-wrap text-center"
+                    style="gap: 2rem"
                   >
-                    <div class="flex flex-col items-center justify-center">
+                    <div class="w-12 grid justify-items-center">
                       <svg
                         class="feather feather-thermometer"
                         xmlns="http://www.w3.org/2000/svg"
-                        width="35"
-                        height="35"
+                        width="30"
+                        height="30"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -158,12 +161,12 @@
                       </svg>
                       <div data-id="temp"></div>
                     </div>
-                    <div class="flex flex-col items-center justify-center">
+                    <div class="w-12 grid justify-items-center">
                       <svg
-                        class="feather feather-cloud-rain text-blue-500"
+                        class="feather feather-cloud-rain"
                         xmlns="http://www.w3.org/2000/svg"
-                        width="35"
-                        height="35"
+                        width="30"
+                        height="30"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -180,12 +183,12 @@
                       </svg>
                       <div data-id="precipChance"></div>
                     </div>
-                    <div class="w-16 flex flex-col items-center justify-center">
+                    <div class="w-12 grid justify-items-center">
                       <svg
                         class="feather feather-wind"
                         xmlns="http://www.w3.org/2000/svg"
-                        width="35"
-                        height="35"
+                        width="30"
+                        height="30"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -199,12 +202,12 @@
                       </svg>
                       <div data-id="wind"></div>
                     </div>
-                    <div class="flex flex-col items-center justify-center">
+                    <div class="w-12 grid justify-items-center">
                       <svg
                         class="feather feather-droplet text-blue-200"
                         xmlns="http://www.w3.org/2000/svg"
-                        width="35"
-                        height="35"
+                        width="30"
+                        height="30"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -244,21 +247,22 @@
       id="noDataModal"
     >
       <div class="flex items-center justify-center min-h-screen">
-        <div class="bg-white mx-auto w-2/5 p-4 rounded-lg relative">
+        <div class="bg-white mx-auto w-fit p-4 rounded-lg relative">
           <!-- Close button -->
           <button
             type="button"
-            class="absolute top-0 right-0 mt-2 mr-4 p-2 text-4xl"
+            class="absolute top-0 right-0 mr-1 text-2xl md:text-3xl lg:text-4xl"
             aria-label="Close"
             id="closeNoDataModalBtn"
           >
             <span aria-hidden="true">&times;</span>
           </button>
+
           <!-- Modal content -->
-          <div class="modal-title">
+          <div class="mr-4">
             <h5 class="modal-title" id="noDataModalLabel"></h5>
           </div>
-          <div class="modal-body">
+          <div class="modal-body italic text-sm">
             <div id="no-data-content" class="column"></div>
           </div>
         </div>

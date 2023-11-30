@@ -62,6 +62,16 @@ function createForecastPeriodElement(period) {
   // Activate the template and get a reference to the content
   const templateContent = forecastPeriodTemplate.content.cloneNode(true);
 
+  // Set color class based on temperature value
+  const tempValue = parseFloat(period.temp);
+  const svgElement = templateContent.querySelector(".feather-thermometer");
+
+  if (tempValue <= 45) {
+    svgElement.classList.add("text-blue-500");
+  } else if (tempValue >= 80) {
+    svgElement.classList.add("text-red-400");
+  }
+
   // Customize the cloned template with period data
   templateContent.querySelector("[data-id='imgIcon']").src = period.img_icon;
   templateContent.querySelector("[data-id='wind']").textContent = period.wind;
