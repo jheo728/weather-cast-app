@@ -62,26 +62,24 @@ function createForecastPeriodElement(period) {
   // Activate the template and get a reference to the content
   const templateContent = forecastPeriodTemplate.content.cloneNode(true);
 
-  // Set color class based on temperature value
-  const tempValue = parseFloat(period.temp);
-  const svgElement = templateContent.querySelector(".feather-thermometer");
+  // Customize the cloned template with period data
+  const tempElement = templateContent.querySelector("[data-id='temp']");
+  const tempValue = period.temp;
 
-  if (tempValue <= 45) {
-    svgElement.classList.add("text-blue-500");
-  } else if (tempValue >= 80) {
-    svgElement.classList.add("text-red-400");
+  // Apply color based on temperature range
+  if (tempValue < 45) {
+    tempElement.classList.add("text-blue-500"); // Change to the appropriate color class
+  } else if (tempValue >= 45 && tempValue < 80) {
+    tempElement.classList.add("text-black"); // Change to the appropriate color class
+  } else {
+    tempElement.classList.add("text-red-500"); // Change to the appropriate color class
   }
 
-  // Customize the cloned template with period data
+  tempElement.textContent = `${tempValue}°`;
   templateContent.querySelector("[data-id='imgIcon']").src = period.img_icon;
   templateContent.querySelector("[data-id='wind']").textContent = period.wind;
-  templateContent.querySelector(
-    "[data-id='temp']"
-  ).textContent = `${period.temp}° F`;
   templateContent.querySelector("[data-id='periodName']").textContent =
     period.name;
-  templateContent.querySelector("[data-id='shortForecast']").textContent =
-    period.short_forecast;
   templateContent.querySelector("[data-id='details']").textContent =
     period.details;
   templateContent.querySelector("[data-id='precipChance']").textContent = `${
