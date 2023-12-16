@@ -10,19 +10,12 @@
   max-height: 75vh;
 }
 
-/* Style for the forecastModal content to enable scrolling and add vertical line */
-#popup-content {
-  max-height: 100%;
-  overflow-y: auto;
-  flex: 1;
-}
-
 /* Adjust the style for the forecast period image */
 .forecast-period-image {
   max-width: 100%;
   height: auto;
   display: block;
-  margin: 0 auto;
+  /* margin: 0 auto; */
 }
 
 .centered-text {
