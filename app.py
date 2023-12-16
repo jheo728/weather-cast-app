@@ -27,7 +27,7 @@ def fetch_analyze_forecast():
             updated_time = forecast_data['properties']['updated']
 
             # Limit to 5 forecast days (day/evening forecast periods)
-            forecast_periods = forecast_data['properties']['periods'][:10]
+            forecast_periods = forecast_data['properties']['periods']
             forecast_content = [
                 {
                     'number': x['number'],
